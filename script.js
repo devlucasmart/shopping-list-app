@@ -22,7 +22,7 @@ function adicionarItem() {
     total += parseFloat(valorTotalItem);
 
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
-    listaItens.push({ item, quantidade, unidade, valorTotalItem });
+    listaItens.push({ item, quantidade, unidade, valorUnitario , valorTotalItem });
     localStorage.setItem("listaCompras", JSON.stringify(listaItens));
 
     atualizarLista();
@@ -111,20 +111,88 @@ function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     let y = 20;
-    doc.text("Lista de Compras", 10, 10);
+    const margin = 10;
 
-    let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
-    let total = 0; // Defina a variável total aqui
+    // Título
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Lista de Compras", margin, y);
+    y += 15;
 
-    listaItens.forEach((item) => {
-        doc.text(`${item.quantidade} ${item.unidade} de ${item.item} - R$ ${item.valorTotalItem}`, 10, y);
-        y += 10;
-        total += parseFloat(item.valorTotalItem); // Calculando o total
+    // Definindo a fonte para o restante do documento
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    // Desenhando o cabeçalho
+    const colunas = ["Item", "Quantidade", "Unidade", "Valor Unitário", "Valor Total"];
+    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    let total = 0;
+
+    // Cabeçalho da tabela com fundo cinza e texto branco
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(169, 169, 169); // Cor cinza (RGB)
+    doc.rect(margin, y, 190, 10, "F");
+    colunas.forEach((coluna, index) => {
+        const colX = margin + index * 38;
+        doc.text(coluna, colX, y + 7);
     });
 
-    doc.text(`Total: R$ ${total.toFixed(2)}`, 10, y + 10);
-    doc.save("lista_de_compras.pdf");
+    y += 12; // Deslocando para a próxima linha após o cabeçalho
 
+    // Preenchendo a tabela com os itens
+    listaItens.forEach((item) => {
+        // Garantir que o valor unitário é um número válido
+        const valorUnitario = parseFloat(item.valorUnitario);
+        const valorTotalItem = parseFloat(item.valorTotalItem);
+
+        // Verifica se os valores são NaN e substitui por 0 caso necessário
+        const valorUnitarioFormatado = isNaN(valorUnitario) ? 0 : valorUnitario;
+        const valorTotalItemFormatado = isNaN(valorTotalItem) ? 0 : valorTotalItem;
+
+        // Adicionando borda arredondada e sombra suave
+        doc.setTextColor(0, 0, 0);
+        doc.rect(margin, y, 190, 8, "S", { radius: 2 });
+
+        // Ajuste de posição (X) para garantir o alinhamento correto
+        const itemX = margin + 0;
+        const quantidadeX = margin + 45;
+        const unidadeX = margin + 85;
+        const valorUnitarioX = margin + 125;
+        const valorTotalItemX = margin + 165;
+
+        // Alinhando o texto nas colunas
+        doc.text(item.item, itemX, y + 5);
+        doc.text(item.quantidade.toString(), quantidadeX, y + 5);
+        doc.text(item.unidade, unidadeX, y + 5);
+        doc.text(`R$ ${valorUnitarioFormatado.toFixed(2)}`, valorUnitarioX, y + 5);
+        doc.text(`R$ ${valorTotalItemFormatado.toFixed(2)}`, valorTotalItemX, y + 5);
+        
+        y += 10;
+        total += valorTotalItemFormatado;
+    });
+
+    // Linha separadora mais fina
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, 200, y);
+    y += 5;
+
+    // Exibindo o total
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total: R$ ${total.toFixed(2)}`, margin, y);
+    y += 15;
+
+    // Rodapé com data e hora
+    const dataHora = new Date().toLocaleString();
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Gerado em: ${dataHora}`, margin, 285);
+
+    // Salva o PDF com nome dinâmico
+    doc.save(`lista_de_compras_${dataHora.replace(/\//g, '-').replace(/:/g, '-')}.pdf`);
+
+    // Limpa os itens do localStorage e atualiza a lista
     localStorage.removeItem("listaCompras");
     atualizarLista();
 }
