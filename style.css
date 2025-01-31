@@ -2,7 +2,7 @@
 body {
     padding: 20px;
     background-color: #f8f9fa;
-    font-family: Arial, sans-serif; /* Font mais legível */
+    font-family: Arial, sans-serif; /* Fonte mais legível */
 }
 
 /* Container principal */
@@ -20,15 +20,24 @@ body {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite melhor adaptação em telas menores */
 }
 
-/* Estilo de inputs */
-.input-group input {
+/* Estilo de inputs e select */
+.input-group input,
+.input-group select {
     font-size: 16px;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ced4da;
-    flex: 1; /* Faz os inputs ocuparem o máximo de espaço */
+    flex: 1; /* Faz os inputs e select ocuparem o máximo de espaço */
+}
+
+/* Ajuste específico para o select */
+.input-group select {
+    min-width: 120px; /* Evita que o select fique muito pequeno */
+    background-color: white;
+    cursor: pointer;
 }
 
 /* Estilo do botão */
@@ -68,12 +77,15 @@ body {
     }
 
     .input-group input,
+    .input-group select,
     .input-group button {
-        width: 100%; /* Faz inputs e botões ocuparem toda a largura */
+        width: 100%; /* Faz inputs, select e botões ocuparem toda a largura */
     }
 
-    /* Tamanho da fonte para inputs e botões no celular */
-    .input-group input, .input-group button {
+    /* Tamanho da fonte para inputs, select e botões no celular */
+    .input-group input, 
+    .input-group select, 
+    .input-group button {
         font-size: 18px;
         padding: 15px;
     }
