@@ -114,10 +114,12 @@ function exportarPDF() {
     doc.text("Lista de Compras", 10, 10);
 
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    let total = 0; // Defina a variável total aqui
 
     listaItens.forEach((item) => {
         doc.text(`${item.quantidade} ${item.unidade} de ${item.item} - R$ ${item.valorTotalItem}`, 10, y);
         y += 10;
+        total += parseFloat(item.valorTotalItem); // Calculando o total
     });
 
     doc.text(`Total: R$ ${total.toFixed(2)}`, 10, y + 10);
