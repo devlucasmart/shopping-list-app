@@ -3,12 +3,14 @@ document.addEventListener("DOMContentLoaded", carregarLista);
 function adicionarItem() {
     const itemInput = document.getElementById("itemInput");
     const quantidadeInput = document.getElementById("quantidadeInput");
+    const unidadeInput = document.getElementById("unidadeInput");
 
     if (itemInput.value.trim() === "" || quantidadeInput.value.trim() === "") return;
 
     const item = {
         nome: itemInput.value,
-        quantidade: quantidadeInput.value
+        quantidade: quantidadeInput.value,
+        unidade: unidadeInput.value
     };
 
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
@@ -18,6 +20,7 @@ function adicionarItem() {
     atualizarLista();
     itemInput.value = "";
     quantidadeInput.value = "";
+    unidadeInput.value = "unidade"; // Reseta o select para a opção padrão
 }
 
 function removerItem(index) {
@@ -40,7 +43,7 @@ function atualizarLista() {
     listaItens.forEach((item, index) => {
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.innerHTML = `${item.nome} (x${item.quantidade}) 
+        li.innerHTML = `${item.nome} (x${item.quantidade} ${item.unidade}) 
             <button class='btn btn-danger btn-sm' onclick='removerItem(${index})'>Remover</button>`;
         lista.appendChild(li);
     });
@@ -55,7 +58,7 @@ function exportarPDF() {
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
 
     listaItens.forEach((item, index) => {
-        doc.text(`${index + 1}. ${item.nome} (x${item.quantidade})`, 10, y);
+        doc.text(`${index + 1}. ${item.nome} (x${item.quantidade} ${item.unidade})`, 10, y);
         y += 10;
     });
 

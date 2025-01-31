@@ -15,8 +15,18 @@
             <div class="col-12 col-sm">
                 <input type="text" id="itemInput" class="form-control" placeholder="Digite um item">
             </div>
-            <div class="col-12 col-sm-3">
+            <div class="col-12 col-sm-2">
                 <input type="number" id="quantidadeInput" class="form-control" placeholder="Qtd" min="1">
+            </div>
+            <div class="col-12 col-sm-3">
+                <select id="unidadeInput" class="form-control">
+                    <option value="unidade">Unidade</option>
+                    <option value="kg">Kg</option>
+                    <option value="g">Gramas</option>
+                    <option value="L">Litros</option>
+                    <option value="mL">Mililitros</option>
+                    <option value="pacote">Pacote</option>
+                </select>
             </div>
             <div class="col-12 col-sm-auto">
                 <button class="btn btn-primary w-100" onclick="adicionarItem()">Adicionar</button>
