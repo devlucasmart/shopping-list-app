@@ -28,17 +28,24 @@
                     <option value="pacote">Pacote</option>
                 </select>
             </div>
+            <div class="col-12 col-sm-2">
+                <input type="text" id="valorUnitInput" class="form-control" placeholder="Valor Unitário" oninput="mascaraMoeda(this)" min="0" step="0.01">
+            </div>
             <div class="col-12 col-sm-auto">
-                <button class="btn btn-primary w-100" onclick="adicionarItem()">Adicionar</button>
+                <button class="btn btn-primary w-100" id="btnAdicionar" onclick="adicionarItem()">Adicionar</button>
             </div>
         </div>
         
         <!-- Lista de itens -->
         <ul id="lista" class="list-group mb-3"></ul>
         
+        <!-- Exibição do valor total -->
+        <h4 class="text-end">Total: R$ <span id="valorTotal">0.00</span></h4>
+        
         <!-- Botão Exportar para PDF -->
-        <button class="btn btn-danger w-100" onclick="exportarPDF()">Exportar para PDF</button>
+        <button class="btn btn-danger w-100" id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
