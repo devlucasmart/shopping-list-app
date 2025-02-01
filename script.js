@@ -178,11 +178,11 @@ function exportarPDF() {
 
     doc.save(`lista_de_compras_${dataHora.replace(/\//g, '-').replace(/:/g, '-')}.pdf`);
 
-    localStorage.removeItem("listaCompras");
-    localStorage.removeItem("totalCarrinho");
-
     atualizarLista();
     atualizarTotalCarrinho();
+
+    localStorage.removeItem("listaCompras");
+    localStorage.removeItem("totalCarrinho");
 }
 
 // Atualiza o total quando a modal do carrinho é exibida (usando evento do Bootstrap)
