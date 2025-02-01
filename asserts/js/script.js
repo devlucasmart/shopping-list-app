@@ -179,9 +179,15 @@ function exportarPDF() {
     doc.save(`lista_de_compras_${dataHora.replace(/\//g, '-').replace(/:/g, '-')}.pdf`);
 
     atualizarLista();
-    atualizarTotalCarrinho();
-
     localStorage.removeItem("listaCompras");
+
+    atualizarTotalCarrinho();
+    localStorage.removeItem("totalCarrinho");
+
+    atualizarLista();
+    localStorage.removeItem("listaCompras");
+
+    atualizarTotalCarrinho();
     localStorage.removeItem("totalCarrinho");
 }
 
