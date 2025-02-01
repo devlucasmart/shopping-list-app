@@ -1,24 +1,36 @@
 /* Estilo geral */
-body {
-    background-color: #f4f6f9;
+html, body {
+    height: 100%;
+    margin: 0;
     font-family: 'Poppins', sans-serif;
-    color: #333;
-    padding: 20px;
+}
+
+/* Fundo */
+body {
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* Container principal */
 .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     max-width: 800px;
-    margin: 0 auto;
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Fundo branco com leve transparência */
+    border-radius: 16px; /* Borda mais arredondada */
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .container:hover {
-    transform: scale(1.01);
+    transform: translateY(-5px); /* Levanta o container ao passar o mouse */
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15); /* Sombra mais forte */
 }
 
 /* Título */
@@ -27,32 +39,35 @@ h2 {
     color: #2c3e50;
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    font-size: 24px;
 }
 
-/* Campos de entrada com tamanho reduzido */
+/* Campos de entrada */
 .form-control {
-    font-size: 16px; /* Reduzi de 18px para 16px */
-    padding: 12px; /* Reduzi de 14px para 12px */
-    border-radius: 6px; /* Ajustei de 8px para 6px */
-    border: 1px solid #ced4da;
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 8px; /* Aumentei o arredondamento */
+    border: 1px solid #ddd;
     transition: all 0.3s ease-in-out;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa; /* Fundo suave para os campos */
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .form-control:focus {
     border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.3);
+    background: #ffffff; /* Altera fundo ao focar */
 }
 
 /* Botões */
 .btn {
     font-size: 16px;
-    padding: 12px;
-    border-radius: 6px;
+    padding: 12px 20px;
+    border-radius: 8px; /* Aumentei o arredondamento */
     font-weight: 600;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Botão primário */
@@ -64,7 +79,8 @@ h2 {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #0056b3, #003f80);
-    transform: scale(1.05);
+    transform: scale(1.05); /* Pequeno zoom ao passar o mouse */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Aumenta a sombra */
 }
 
 /* Botão de exportação */
@@ -77,27 +93,28 @@ h2 {
 .btn-danger:hover {
     background: linear-gradient(135deg, #a71d2a, #7a131d);
     transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Lista de itens */
 .list-group {
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .list-group-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px;
-    border-radius: 6px;
+    padding: 16px 20px;
+    border-radius: 8px; /* Aumentei o arredondamento */
     background: #ffffff;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     font-size: 16px;
 }
 
 .list-group-item:hover {
-    background: #f8f9fa;
+    background: #f0f0f0;
     transform: translateX(5px);
 }
 
@@ -106,8 +123,8 @@ h4 {
     font-weight: 700;
     color: #2c3e50;
     text-align: right;
-    margin-top: 20px;
-    font-size: 18px;
+    margin-top: 30px;
+    font-size: 20px;
 }
 
 /* Ajustes para telas grandes */
@@ -117,45 +134,51 @@ h4 {
     }
 
     .form-control {
-        font-size: 15px; /* Pequena redução extra para telas grandes */
-        padding: 10px;
+        font-size: 15px;
+        padding: 12px;
     }
 
     .btn {
         font-size: 16px;
-        padding: 12px;
+        padding: 14px 22px;
     }
 
     .list-group-item {
-        font-size: 16px;
+        font-size: 17px;
     }
 }
 
-/* Responsividade para a lista de itens */
-.list-group-item {
-    display: flex;
-    flex-wrap: wrap; /* Permite que os itens se movam para a próxima linha */
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px; /* Ajusta o padding para telas pequenas */
-    border-radius: 6px;
-    background: #ffffff;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
-}
-
-/* Ajuste específico para telas pequenas */
+/* Responsividade para telas pequenas */
 @media (max-width: 576px) {
     .list-group-item {
-        flex-direction: column; /* Alinha os itens em uma coluna */
-        padding: 12px;
+        flex-direction: column;
+        padding: 12px 20px;
         font-size: 14px;
     }
 
     .list-group-item .btn {
-        margin-top: 10px; /* Adiciona espaçamento entre o botão e o texto */
+        margin-top: 10px;
         width: 100%;
     }
+
+    /* Ajustes no container para telas pequenas */
+    .container {
+        padding: 20px; /* Menos padding em telas pequenas */
+        margin-top: 10px;
+    }
+
+    h2 {
+        font-size: 20px; /* Menor título em telas pequenas */
+    }
+
+    h4 {
+        font-size: 18px; /* Menor tamanho para total */
+    }
+}
+
+button:hover {
+    background-color: #0d6efd;
+    color: white;
+    transform: scale(1.05);
 }
 

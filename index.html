@@ -5,12 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Compras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container py-4">
-        <h2 class="mb-4 text-center">Lista de Compras</h2>
+        <!-- Ícone do carrinho -->
+        <div class="d-flex justify-content-between align-items-center mb-4 p-2 bg-light rounded shadow-sm" style="gap: 20px;">
+            <h2 class="mb-0 fw-bold">🛒 Lista de Compras</h2>
+            <button class="btn btn-outline-primary position-relative rounded-circle p-3 shadow-sm ms-3" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#carrinhoModal" 
+                    style="transition: 0.3s;">
+                <i class="bi bi-cart-fill fs-4"></i> <!-- Ícone do carrinho -->
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorItens">0</span>
+            </button>
+        </div>     
+
         <div class="row g-2">
             <div class="col-12 col-sm">
                 <input type="text" id="itemInput" class="form-control" placeholder="Digite um item">
@@ -37,16 +50,33 @@
             </div>
         </div>
         
-        <!-- Lista de itens -->
-        <ul id="lista" class="list-group mb-3"></ul>
-        
         <!-- Exibição do valor total -->
-        <h4 class="text-end">Total: R$ <span id="valorTotal">0.00</span></h4>
+        <h4 class="text-end mt-3">Total: R$ <span id="totalCarrinho">0.00</span></h4>
         
         <!-- Botão Exportar para PDF -->
-        <button class="btn btn-danger w-100" id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
+        <button class="btn btn-danger w-100 mt-2" id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
+    </div>
+
+    <!-- Modal do Carrinho -->
+    <div class="modal fade" id="carrinhoModal" tabindex="-1" aria-labelledby="carrinhoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Carrinho de Compras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="listaCarrinho" class="list-group"></ul>
+                </div>
+                <div class="modal-footer">
+                    <h5>Total: R$ <span id="totalCarrinho">0.00</span></h5>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
