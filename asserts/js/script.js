@@ -115,6 +115,7 @@ function exportarPDF() {
     const doc = new jsPDF();
     let y = 20;
     const margin = 10;
+    const pageHeight = doc.internal.pageSize.getHeight(); // Altura da página A4
 
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
@@ -128,19 +129,29 @@ function exportarPDF() {
     const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
     let total = 0;
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFillColor(169, 169, 169);
-    doc.rect(margin, y, 190, 10, "F");
-    colunas.forEach((coluna, index) => {
-        const colX = margin + index * 38;
-        doc.text(coluna, colX, y + 7);
-    });
+    // Cabeçalho da tabela
+    function desenharCabecalho() {
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(169, 169, 169);
+        doc.rect(margin, y, 190, 10, "F");
+        colunas.forEach((coluna, index) => {
+            const colX = margin + index * 38;
+            doc.text(coluna, colX, y + 7);
+        });
+        y += 12;
+    }
 
-    y += 12;
+    desenharCabecalho();
 
-    listaItens.forEach((item) => {
+    listaItens.forEach((item, index) => {
         const valorUnitario = parseFloat(item.valorUnitario) || 0;
         const valorTotalItem = parseFloat(item.valorTotalItem) || 0;
+
+        if (y + 15 > pageHeight - margin) {
+            doc.addPage();
+            y = 20;
+            desenharCabecalho();
+        }
 
         doc.setTextColor(0, 0, 0);
         doc.rect(margin, y, 190, 8, "S", { radius: 2 });
@@ -161,6 +172,12 @@ function exportarPDF() {
         total += valorTotalItem;
     });
 
+    // Verifica se há espaço para o total
+    if (y + 20 > pageHeight - margin) {
+        doc.addPage();
+        y = 20;
+    }
+
     doc.setDrawColor(0);
     doc.setLineWidth(0.5);
     doc.line(margin, y, 200, y);
@@ -171,24 +188,26 @@ function exportarPDF() {
     doc.text(`Total: R$ ${total.toFixed(2)}`, margin, y);
     y += 15;
 
+    // Data e hora no rodapé da última página
     const dataHora = new Date().toLocaleString();
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
-    doc.text(`Gerado em: ${dataHora}`, margin, 285);
+    doc.text(`Gerado em: ${dataHora}`, margin, pageHeight - 10);
 
     doc.save(`lista_de_compras_${dataHora.replace(/\//g, '-').replace(/:/g, '-')}.pdf`);
 
+    // Limpeza e atualização
     atualizarLista();
     localStorage.removeItem("listaCompras");
 
     atualizarTotalCarrinho();
     localStorage.removeItem("totalCarrinho");
 
-    atualizarLista();
-    localStorage.removeItem("listaCompras");
-
-    atualizarTotalCarrinho();
-    localStorage.removeItem("totalCarrinho");
+     atualizarLista();
+     localStorage.removeItem("listaCompras");
+ 
+     atualizarTotalCarrinho();
+     localStorage.removeItem("totalCarrinho");
 }
 
 // Atualiza o total quando a modal do carrinho é exibida (usando evento do Bootstrap)
