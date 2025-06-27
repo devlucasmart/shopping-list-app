@@ -12,28 +12,36 @@
 </head>
 <body>
     <div class="container py-4">
-        <!-- Ícone do carrinho -->
-        <div class="d-flex justify-content-between align-items-center mb-4 p-2 bg-light rounded shadow-sm" style="gap: 20px;">
-            <h2 class="mb-0 fw-bold">🛒 Lista de Compras</h2>
-            <button class="btn btn-outline-primary position-relative rounded-circle p-3 shadow-sm ms-3" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#carrinhoModal" 
-                    style="transition: 0.3s;">
-                <i class="bi bi-cart-fill fs-4"></i> <!-- Ícone do carrinho -->
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorItens">0</span>
-            </button>
-        </div>     
+        <!-- Header estilizado -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">🛒 Lista de Compras</h2>
+                <button class="btn cart-button position-relative rounded-circle p-3" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#carrinhoModal">
+                    <i class="bi bi-cart-fill fs-4"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorItens" style="display: flex;">0</span>
+                </button>
+            </div>
+        </div>
 
-        <div class="row g-2">
-            <div class="col-12 col-sm">
-                <input type="text" id="itemInput" class="form-control" placeholder="Digite um item">
+        <!-- Formulário de entrada -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="position-relative">
+                    <i class="bi bi-bag-plus position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
+                    <input type="text" id="itemInput" class="form-control ps-5" placeholder="Digite um item">
+                </div>
             </div>
-            <div class="col-12 col-sm-2">
-                <input type="number" id="quantidadeInput" class="form-control" placeholder="Qtd" min="1">
+            <div class="col-6 col-md-2">
+                <div class="position-relative">
+                    <i class="bi bi-123 position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
+                    <input type="number" id="quantidadeInput" class="form-control ps-5" placeholder="Qtd" min="1">
+                </div>
             </div>
-            <div class="col-12 col-sm-3">
+            <div class="col-6 col-md-2">
                 <select id="unidadeInput" class="form-control">
-                    <option value="unidade" disabled selected>Selecione uma Unidade</option>
+                    <option value="unidade" disabled selected>Unidade</option>
                     <option value="unidade">Unidade</option>
                     <option value="kg">Kg</option>
                     <option value="g">Gramas</option>
@@ -42,34 +50,129 @@
                     <option value="pacote">Pacote</option>
                 </select>
             </div>
-            <div class="col-12 col-sm-2">
-                <input type="text" id="valorUnitInput" class="form-control" placeholder="Valor Unitário" oninput="mascaraMoeda(this)" min="0" step="0.01">
+            <div class="col-8 col-md-2">
+                <div class="position-relative">
+                    <i class="bi bi-currency-dollar position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
+                    <input type="text" id="valorUnitInput" class="form-control ps-5" placeholder="Valor" oninput="mascaraMoeda(this)">
+                </div>
             </div>
-            <div class="col-12 col-sm-auto">
-                <button class="btn btn-primary w-100" id="btnAdicionar" onclick="adicionarItem()">Adicionar</button>
+            <div class="col-4 col-md-2">
+                <button class="btn btn-primary w-100 h-100" id="btnAdicionar" onclick="adicionarItem()">
+                    <i class="bi bi-plus-circle me-2"></i>Add
+                </button>
             </div>
         </div>
         
         <!-- Exibição do valor total -->
-        <h4 class="text-end mt-3">Total: R$ <span id="totalCarrinho">0.00</span></h4>
+        <div class="total-display">
+            <div class="content">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>💰 Total da Lista</span>
+                    <span>R$ <span id="totalCarrinho">0.00</span></span>
+                </div>
+            </div>
+        </div>
         
         <!-- Botão Exportar para PDF -->
-        <button class="btn btn-danger w-100 mt-2" id="btnExportar" onclick="exportarPDF()">Exportar para PDF</button>
+        <button class="btn btn-danger w-100" id="btnExportar" onclick="exportarPDF()">
+            <i class="bi bi-file-earmark-pdf me-2"></i>
+            Exportar Lista para PDF
+        </button>
     </div>
 
     <!-- Modal do Carrinho -->
     <div class="modal fade" id="carrinhoModal" tabindex="-1" aria-labelledby="carrinhoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart-check me-2"></i>
+                        Seus Itens de Compra
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="listaCarrinho" class="list-group list-group-flush"></ul>
+                    <div class="text-center py-4" id="carrinhoVazio" style="display: none;">
+                        <i class="bi bi-cart-x display-1 text-muted"></i>
+                        <p class="text-muted mt-2">Seu carrinho está vazio</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100 d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-currency-dollar me-1"></i>
+                            Total: R$ <span id="totalCarrinho">0.00</span>
+                        </h4>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Continuar Comprando
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Carrinho de Compras</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Editar Item
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <ul id="listaCarrinho" class="list-group"></ul>
+                    <div class="mb-3">
+                        <label for="editItemInput" class="form-label fw-bold">
+                            <i class="bi bi-tag me-1"></i>
+                            Nome do Item
+                        </label>
+                        <input type="text" id="editItemInput" class="form-control" placeholder="Digite o nome do item">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="editQuantidadeInput" class="form-label fw-bold">
+                                <i class="bi bi-123 me-1"></i>
+                                Quantidade
+                            </label>
+                            <input type="number" id="editQuantidadeInput" class="form-control" placeholder="Qtd" min="1">
+                        </div>
+                        <div class="col-6">
+                            <label for="editUnidadeInput" class="form-label fw-bold">
+                                <i class="bi bi-rulers me-1"></i>
+                                Unidade
+                            </label>
+                            <select id="editUnidadeInput" class="form-control">
+                                <option value="unidade">Unidade</option>
+                                <option value="kg">Kg</option>
+                                <option value="g">Gramas</option>
+                                <option value="L">Litros</option>
+                                <option value="mL">Mililitros</option>
+                                <option value="pacote">Pacote</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="editValorUnitInput" class="form-label fw-bold">
+                            <i class="bi bi-currency-dollar me-1"></i>
+                            Valor Unitário
+                        </label>
+                        <input type="text" id="editValorUnitInput" class="form-control" placeholder="R$ 0,00" oninput="mascaraMoeda(this)">
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <h5>Total: R$ <span id="totalCarrinho">0.00</span></h5>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="salvarEdicao()">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Salvar Alterações
+                    </button>
                 </div>
             </div>
         </div>
