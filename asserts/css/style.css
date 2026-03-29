@@ -229,6 +229,44 @@ body::before {
     color: white;
 }
 
+.import-card {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(103, 126, 234, 0.16);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(45, 55, 72, 0.08);
+}
+
+.import-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.import-card-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.import-card-header p,
+.import-card-hint,
+.import-card-example {
+    color: #718096;
+}
+
+.import-card-example {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    background: rgba(103, 126, 234, 0.08);
+    border-radius: 12px;
+    font-weight: 600;
+}
+
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
@@ -447,6 +485,16 @@ body::before {
     .btn {
         padding: 0.875rem 1.5rem;
         font-size: 0.9rem;
+    }
+
+    .import-card-header {
+        flex-direction: column;
+    }
+
+    .import-card-example {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
     }
     
     .total-display {

@@ -36,7 +36,7 @@
             <div class="col-6 col-md-2">
                 <div class="position-relative">
                     <i class="bi bi-123 position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
-                    <input type="number" id="quantidadeInput" class="form-control ps-5" placeholder="Qtd" min="1">
+                    <input type="number" id="quantidadeInput" class="form-control ps-5" placeholder="Qtd" min="0">
                 </div>
             </div>
             <div class="col-6 col-md-2">
@@ -60,6 +60,28 @@
                 <button class="btn btn-primary w-100 h-100" id="btnAdicionar" onclick="adicionarItem()">
                     <i class="bi bi-plus-circle me-2"></i>Add
                 </button>
+            </div>
+        </div>
+
+        <div class="import-card mb-4">
+            <div class="import-card-header">
+                <div>
+                    <h3 class="mb-1"><i class="bi bi-filetype-md me-2"></i>Importar Lista em Markdown</h3>
+                    <p class="mb-0">Use uma ou mais tabelas Markdown para carregar itens com quantidade e valor iniciando em 0.</p>
+                </div>
+                <a class="btn btn-outline-primary" href="./modelo-lista.md" download>
+                    <i class="bi bi-download me-2"></i>Baixar modelo
+                </a>
+            </div>
+            <div class="import-card-body">
+                <p class="import-card-hint mb-3">Formato esperado: colunas item, quantidade, unidade e valor unitario. Voce pode separar por categorias em varias tabelas.</p>
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-stretch align-items-md-center">
+                    <input type="file" id="markdownFileInput" class="d-none" accept=".md,text/markdown" onchange="importarMarkdownLista(event)">
+                    <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('markdownFileInput').click()">
+                        <i class="bi bi-upload me-2"></i>Selecionar arquivo .md
+                    </button>
+                    <span class="import-card-example">Exemplo: | arroz | 0 | kg | 0 |</span>
+                </div>
             </div>
         </div>
         
@@ -139,7 +161,7 @@
                                 <i class="bi bi-123 me-1"></i>
                                 Quantidade
                             </label>
-                            <input type="number" id="editQuantidadeInput" class="form-control" placeholder="Qtd" min="1">
+                            <input type="number" id="editQuantidadeInput" class="form-control" placeholder="Qtd" min="0">
                         </div>
                         <div class="col-6">
                             <label for="editUnidadeInput" class="form-label fw-bold">

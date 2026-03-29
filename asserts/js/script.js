@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", function() {
     atualizarContadorCarrinho(); // Força atualização do contador na inicialização
 });
 
+const CABECALHOS_MARKDOWN = {
+    item: ["item", "produto", "nome"],
+    quantidade: ["quantidade", "qtd"],
+    unidade: ["unidade", "medida"],
+    valorUnitario: ["valor unitario", "valorunitario", "valor_unitario", "valor", "preco", "preco unitario"]
+};
+
 let total = 0;
 
 // Variável para armazenar o índice do item sendo editado
@@ -64,17 +71,14 @@ function adicionarItem() {
     const unidade = unidadeInput.value;
     const valorUnitario = converterParaFloat(valorUnitarioInput.value);
 
-    if (!item || isNaN(quantidade) || quantidade <= 0) {
-        mostrarNotificacao("Preencha todos os campos corretamente!", "error");
+    if (!item || isNaN(quantidade) || quantidade < 0) {
+        mostrarNotificacao("Informe um item e uma quantidade maior ou igual a 0.", "error");
         return;
     }
 
-    // Calcula o valor total do item
-    const valorTotalItem = (quantidade * valorUnitario).toFixed(2);
-
     // Adiciona o novo item à lista
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
-    listaItens.push({ item, quantidade, unidade, valorUnitario, valorTotalItem });
+    listaItens.push(criarItemLista(item, quantidade, unidade, valorUnitario));
     
     // Atualiza o localStorage com a lista de itens
     localStorage.setItem("listaCompras", JSON.stringify(listaItens));
@@ -107,11 +111,185 @@ function adicionarItem() {
     valorUnitarioInput.value = "";
 }
 
+function criarItemLista(item, quantidade, unidade = "unidade", valorUnitario = 0) {
+    const quantidadeNormalizada = Number.isFinite(Number(quantidade)) ? Number(quantidade) : 0;
+    const valorUnitarioNormalizado = Number.isFinite(Number(valorUnitario)) ? Number(valorUnitario) : 0;
+
+    return {
+        item: item.trim(),
+        quantidade: quantidadeNormalizada,
+        unidade: unidade || "unidade",
+        valorUnitario: valorUnitarioNormalizado,
+        valorTotalItem: (quantidadeNormalizada * valorUnitarioNormalizado).toFixed(2)
+    };
+}
+
 function converterParaFloat(valor) {
     if (!valor) return 0;
     valor = valor.trim().replace(/^R\$\s*/, "").replace(",", ".");
     const numero = parseFloat(valor);
     return isNaN(numero) ? 0 : numero;
+}
+
+function normalizarCabecalhoMarkdown(valor) {
+    return valor
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function obterCelulasMarkdown(linha) {
+    return linha
+        .trim()
+        .replace(/^\|/, "")
+        .replace(/\|$/, "")
+        .split("|")
+        .map((celula) => celula.trim());
+}
+
+function ehSeparadorMarkdown(celulas) {
+    return celulas.length > 0 && celulas.every((celula) => /^:?-{3,}:?$/.test(celula.replace(/\s+/g, "")));
+}
+
+function obterIndiceColuna(cabecalhos, aliases) {
+    return cabecalhos.findIndex((cabecalho) => aliases.includes(cabecalho));
+}
+
+function converterNumeroMarkdown(valor) {
+    if (!valor) return 0;
+
+    const valorNormalizado = valor
+        .replace(/R\$/gi, "")
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .trim();
+
+    const numero = parseFloat(valorNormalizado);
+    return Number.isFinite(numero) ? numero : 0;
+}
+
+function extrairItensTabelaMarkdown(linhasTabela) {
+    if (linhasTabela.length < 3) {
+        throw new Error("Cada tabela Markdown precisa ter cabeçalho, separador e pelo menos uma linha de item.");
+    }
+
+    const cabecalhos = obterCelulasMarkdown(linhasTabela[0]).map(normalizarCabecalhoMarkdown);
+    const separador = obterCelulasMarkdown(linhasTabela[1]);
+
+    if (!ehSeparadorMarkdown(separador)) {
+        throw new Error("A tabela Markdown precisa ter a linha separadora com --- logo abaixo do cabeçalho.");
+    }
+
+    const indiceItem = obterIndiceColuna(cabecalhos, CABECALHOS_MARKDOWN.item);
+    const indiceQuantidade = obterIndiceColuna(cabecalhos, CABECALHOS_MARKDOWN.quantidade);
+    const indiceUnidade = obterIndiceColuna(cabecalhos, CABECALHOS_MARKDOWN.unidade);
+    const indiceValorUnitario = obterIndiceColuna(cabecalhos, CABECALHOS_MARKDOWN.valorUnitario);
+
+    if (indiceItem === -1) {
+        throw new Error("A coluna item é obrigatória no arquivo Markdown.");
+    }
+
+    return linhasTabela
+        .slice(2)
+        .map(obterCelulasMarkdown)
+        .map((celulas) => {
+            const nomeItem = (celulas[indiceItem] || "").trim();
+
+            if (!nomeItem) {
+                return null;
+            }
+
+            const quantidade = indiceQuantidade === -1 ? 0 : converterNumeroMarkdown(celulas[indiceQuantidade] || "0");
+            const unidade = indiceUnidade === -1 ? "unidade" : (celulas[indiceUnidade] || "unidade").trim() || "unidade";
+            const valorUnitario = indiceValorUnitario === -1 ? 0 : converterNumeroMarkdown(celulas[indiceValorUnitario] || "0");
+
+            return criarItemLista(nomeItem, quantidade, unidade, valorUnitario);
+        })
+        .filter(Boolean);
+}
+
+function processarMarkdownLista(markdown) {
+    const linhas = markdown
+        .split(/\r?\n/)
+        .map((linha) => linha.trim());
+
+    const tabelas = [];
+    let tabelaAtual = [];
+
+    linhas.forEach((linha) => {
+        if (linha.startsWith("|")) {
+            tabelaAtual.push(linha);
+            return;
+        }
+
+        if (tabelaAtual.length > 0) {
+            tabelas.push(tabelaAtual);
+            tabelaAtual = [];
+        }
+    });
+
+    if (tabelaAtual.length > 0) {
+        tabelas.push(tabelaAtual);
+    }
+
+    if (tabelas.length === 0) {
+        throw new Error("O arquivo Markdown precisa ter ao menos uma tabela com cabeçalho e itens.");
+    }
+
+    const itens = tabelas.flatMap(extrairItensTabelaMarkdown);
+
+    if (itens.length === 0) {
+        throw new Error("Nenhum item válido foi encontrado nas tabelas Markdown.");
+    }
+
+    return itens;
+}
+
+function importarMarkdownLista(event) {
+    const arquivo = event.target.files[0];
+
+    if (!arquivo) {
+        return;
+    }
+
+    const leitor = new FileReader();
+
+    leitor.onload = function(e) {
+        try {
+            const conteudo = e.target.result;
+            const itensImportados = processarMarkdownLista(conteudo);
+            const listaAtual = JSON.parse(localStorage.getItem("listaCompras")) || [];
+
+            if (listaAtual.length > 0) {
+                const desejaSubstituir = confirm("Já existe uma lista salva. Deseja substituir pelos itens do Markdown?");
+
+                if (!desejaSubstituir) {
+                    event.target.value = "";
+                    return;
+                }
+            }
+
+            localStorage.setItem("listaCompras", JSON.stringify(itensImportados));
+            atualizarTotalCarrinho();
+            atualizarLista();
+            mostrarNotificacao(`${itensImportados.length} itens importados do Markdown.`, "success");
+        } catch (erro) {
+            console.error("Erro ao importar Markdown:", erro);
+            mostrarNotificacao(erro.message || "Nao foi possivel importar o arquivo Markdown.", "error");
+        } finally {
+            event.target.value = "";
+        }
+    };
+
+    leitor.onerror = function() {
+        mostrarNotificacao("Nao foi possivel ler o arquivo selecionado.", "error");
+        event.target.value = "";
+    };
+
+    leitor.readAsText(arquivo, "utf-8");
 }
 
 function mascaraMoeda(input) {
@@ -408,25 +586,16 @@ function salvarEdicao() {
     const valorUnitarioInput = converterParaFloat(document.getElementById("editValorUnitInput").value);
     
     // Validação
-    if (!itemInput || isNaN(quantidadeInput) || quantidadeInput <= 0) {
-        mostrarNotificacao("Preencha todos os campos corretamente!", "error");
+    if (!itemInput || isNaN(quantidadeInput) || quantidadeInput < 0) {
+        mostrarNotificacao("Informe um item e uma quantidade maior ou igual a 0.", "error");
         return;
     }
-    
-    // Calcula o novo valor total
-    const valorTotalItem = (quantidadeInput * valorUnitarioInput).toFixed(2);
     
     // Atualiza o item na lista
     let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
     const itemAnterior = listaItens[itemEditandoIndex].item;
     
-    listaItens[itemEditandoIndex] = {
-        item: itemInput,
-        quantidade: quantidadeInput,
-        unidade: unidadeInput,
-        valorUnitario: valorUnitarioInput,
-        valorTotalItem: valorTotalItem
-    };
+    listaItens[itemEditandoIndex] = criarItemLista(itemInput, quantidadeInput, unidadeInput, valorUnitarioInput);
     
     // Salva a lista atualizada
     localStorage.setItem("listaCompras", JSON.stringify(listaItens));
