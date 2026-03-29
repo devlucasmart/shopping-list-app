@@ -77,11 +77,11 @@ function adicionarItem() {
     }
 
     // Adiciona o novo item à lista
-    let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    let listaItens = obterListaItens();
     listaItens.push(criarItemLista(item, quantidade, unidade, valorUnitario));
     
     // Atualiza o localStorage com a lista de itens
-    localStorage.setItem("listaCompras", JSON.stringify(listaItens));
+    salvarListaItens(listaItens);
 
     // Atualiza o total e a lista exibida
     atualizarTotalCarrinho();
@@ -120,8 +120,46 @@ function criarItemLista(item, quantidade, unidade = "unidade", valorUnitario = 0
         quantidade: quantidadeNormalizada,
         unidade: unidade || "unidade",
         valorUnitario: valorUnitarioNormalizado,
+        comprado: false,
         valorTotalItem: (quantidadeNormalizada * valorUnitarioNormalizado).toFixed(2)
     };
+}
+
+function normalizarListaItens(listaItens) {
+    return listaItens.map((item) => ({
+        ...item,
+        comprado: Boolean(item.comprado),
+        valorTotalItem: (Number(item.quantidade || 0) * Number(item.valorUnitario || 0)).toFixed(2)
+    }));
+}
+
+function salvarListaItens(listaItens) {
+    localStorage.setItem("listaCompras", JSON.stringify(normalizarListaItens(listaItens)));
+}
+
+function obterListaItens() {
+    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    const listaNormalizada = normalizarListaItens(listaItens);
+
+    if (JSON.stringify(listaItens) !== JSON.stringify(listaNormalizada)) {
+        salvarListaItens(listaNormalizada);
+    }
+
+    return listaNormalizada;
+}
+
+function atualizarResumoCarrinho(listaItens) {
+    const totalItens = listaItens.length;
+    const itensComprados = listaItens.filter((item) => item.comprado).length;
+    const itensPendentes = totalItens - itensComprados;
+
+    const totalItensEl = document.getElementById("resumoTotalItens");
+    const pendentesEl = document.getElementById("resumoPendentes");
+    const compradosEl = document.getElementById("resumoComprados");
+
+    if (totalItensEl) totalItensEl.textContent = totalItens;
+    if (pendentesEl) pendentesEl.textContent = itensPendentes;
+    if (compradosEl) compradosEl.textContent = itensComprados;
 }
 
 function converterParaFloat(valor) {
@@ -269,7 +307,7 @@ function importarMarkdownLista(event) {
         try {
             const conteudo = e.target.result;
             const itensImportados = processarMarkdownLista(conteudo);
-            const listaAtual = JSON.parse(localStorage.getItem("listaCompras")) || [];
+            const listaAtual = obterListaItens();
 
             if (listaAtual.length > 0) {
                 const desejaSubstituir = confirm("Já existe uma lista salva. Deseja substituir pelos itens do Markdown?");
@@ -280,7 +318,7 @@ function importarMarkdownLista(event) {
                 }
             }
 
-            localStorage.setItem("listaCompras", JSON.stringify(itensImportados));
+            salvarListaItens(itensImportados);
             atualizarTotalCarrinho();
             atualizarLista();
             mostrarNotificacao(`${itensImportados.length} itens importados do Markdown.`, "success");
@@ -376,7 +414,7 @@ function mostrarNotificacao(mensagem, tipo = "info") {
 }
 
 function removerItem(index) {
-    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    const listaItens = obterListaItens();
     const itemRemovido = listaItens[index];
     
     if (!itemRemovido) return;
@@ -384,7 +422,7 @@ function removerItem(index) {
     // Confirmação mais elegante
     if (confirm(`Deseja realmente remover "${itemRemovido.item}" da lista?`)) {
         listaItens.splice(index, 1);
-        localStorage.setItem("listaCompras", JSON.stringify(listaItens));
+        salvarListaItens(listaItens);
         atualizarTotalCarrinho();
         atualizarLista();
         
@@ -392,9 +430,28 @@ function removerItem(index) {
     }
 }
 
+function alternarItemComprado(index) {
+    const listaItens = obterListaItens();
+    const itemSelecionado = listaItens[index];
+
+    if (!itemSelecionado) return;
+
+    itemSelecionado.comprado = !itemSelecionado.comprado;
+    salvarListaItens(listaItens);
+    atualizarLista();
+    atualizarTotalCarrinho();
+
+    mostrarNotificacao(
+        itemSelecionado.comprado
+            ? `${itemSelecionado.item} marcado como pego.`
+            : `${itemSelecionado.item} voltou para pendentes.`,
+        itemSelecionado.comprado ? "success" : "info"
+    );
+}
+
 // Função para atualizar o total do carrinho e o contador
 function atualizarTotalCarrinho() {
-    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    const listaItens = obterListaItens();
     let totalGeral = 0;
     
     // Calcula o total
@@ -427,8 +484,9 @@ function atualizarLista() {
     const carrinhoVazio = document.getElementById("carrinhoVazio");
     let totalGeral = 0;
     
-    let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    let listaItens = obterListaItens();
     listaCarrinho.innerHTML = "";
+    atualizarResumoCarrinho(listaItens);
 
     if (listaItens.length === 0) {
         carrinhoVazio.style.display = "block";
@@ -437,17 +495,26 @@ function atualizarLista() {
         carrinhoVazio.style.display = "none";
         listaCarrinho.style.display = "block";
 
-        listaItens.forEach((el, index) => {
+        const listaOrdenada = listaItens
+            .map((item, index) => ({ ...item, originalIndex: index }))
+            .sort((itemA, itemB) => Number(itemA.comprado) - Number(itemB.comprado));
+
+        listaOrdenada.forEach((el) => {
             totalGeral += parseFloat(el.valorTotalItem);
             
             const itemElement = document.createElement('li');
-            itemElement.className = 'list-group-item carrinho-item';
+            itemElement.className = `list-group-item carrinho-item ${el.comprado ? 'carrinho-item-comprado' : ''}`;
             itemElement.innerHTML = `
                 <div class="carrinho-item-header">
                     <div class="carrinho-item-info">
-                        <div class="carrinho-item-titulo">
-                            <i class="bi bi-bag-check-fill text-success me-2"></i>
-                            ${el.item}
+                        <div class="carrinho-item-topo">
+                            <div class="carrinho-item-titulo">
+                                <i class="bi ${el.comprado ? 'bi-check2-circle text-success' : 'bi-bag-check-fill text-success'} me-2"></i>
+                                ${el.item}
+                            </div>
+                            <span class="carrinho-status-badge ${el.comprado ? 'status-comprado' : 'status-pendente'}">
+                                ${el.comprado ? 'Ja pego' : 'Pendente'}
+                            </span>
                         </div>
                         <div class="carrinho-item-detalhes">
                             <div class="carrinho-item-detalhe">
@@ -465,10 +532,13 @@ function atualizarLista() {
                             R$ ${parseFloat(el.valorTotalItem).toFixed(2)}
                         </div>
                         <div class="carrinho-acoes">
-                            <button class="carrinho-btn carrinho-btn-editar" onclick="editarItem(${index})" title="Editar item">
+                            <button class="carrinho-btn carrinho-btn-check ${el.comprado ? 'ativo' : ''}" onclick="alternarItemComprado(${el.originalIndex})" title="Marcar item como pego">
+                                <i class="bi ${el.comprado ? 'bi-arrow-counterclockwise' : 'bi-check2'}"></i>
+                            </button>
+                            <button class="carrinho-btn carrinho-btn-editar" onclick="editarItem(${el.originalIndex})" title="Editar item">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="carrinho-btn carrinho-btn-remover" onclick="removerItem(${index})" title="Remover item">
+                            <button class="carrinho-btn carrinho-btn-remover" onclick="removerItem(${el.originalIndex})" title="Remover item">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -502,7 +572,7 @@ function exportarPDF() {
     doc.setFont("helvetica", "normal");
 
     const colunas = ["Item", "Quantidade", "Unidade", "Valor Unitário", "Valor Total"];
-    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    const listaItens = obterListaItens();
     let total = 0;
 
     // Cabeçalho da tabela
@@ -581,7 +651,7 @@ function exportarPDF() {
 
 // Função para abrir o modal de edição
 function editarItem(index) {
-    const listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    const listaItens = obterListaItens();
     const item = listaItens[index];
     
     if (!item) return;
@@ -616,13 +686,16 @@ function salvarEdicao() {
     }
     
     // Atualiza o item na lista
-    let listaItens = JSON.parse(localStorage.getItem("listaCompras")) || [];
+    let listaItens = obterListaItens();
     const itemAnterior = listaItens[itemEditandoIndex].item;
     
-    listaItens[itemEditandoIndex] = criarItemLista(itemInput, quantidadeInput, unidadeInput, valorUnitarioInput);
+    listaItens[itemEditandoIndex] = {
+        ...criarItemLista(itemInput, quantidadeInput, unidadeInput, valorUnitarioInput),
+        comprado: Boolean(listaItens[itemEditandoIndex].comprado)
+    };
     
     // Salva a lista atualizada
-    localStorage.setItem("listaCompras", JSON.stringify(listaItens));
+    salvarListaItens(listaItens);
     
     // Atualiza a interface
     atualizarTotalCarrinho();

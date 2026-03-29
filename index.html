@@ -107,16 +107,36 @@
 
     <!-- Modal do Carrinho -->
     <div class="modal fade" id="carrinhoModal" tabindex="-1" aria-labelledby="carrinhoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="bi bi-cart-check me-2"></i>
                         Seus Itens de Compra
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-light btn-sm carrinho-btn-fechar-topo" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i>
+                            Fechar
+                        </button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
                 <div class="modal-body">
+                    <div class="carrinho-resumo" id="carrinhoResumo">
+                        <div class="carrinho-resumo-card">
+                            <span class="carrinho-resumo-label">Total de itens</span>
+                            <strong id="resumoTotalItens">0</strong>
+                        </div>
+                        <div class="carrinho-resumo-card">
+                            <span class="carrinho-resumo-label">Pendentes</span>
+                            <strong id="resumoPendentes">0</strong>
+                        </div>
+                        <div class="carrinho-resumo-card carrinho-resumo-card-sucesso">
+                            <span class="carrinho-resumo-label">Ja pegos</span>
+                            <strong id="resumoComprados">0</strong>
+                        </div>
+                    </div>
                     <ul id="listaCarrinho" class="list-group list-group-flush"></ul>
                     <div class="text-center py-4" id="carrinhoVazio" style="display: none;">
                         <i class="bi bi-cart-x display-1 text-muted"></i>
@@ -124,15 +144,21 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="w-100 d-flex justify-content-between align-items-center">
+                    <div class="w-100 d-flex justify-content-between align-items-center gap-3 flex-wrap">
                         <h4 class="mb-0">
                             <i class="bi bi-currency-dollar me-1"></i>
                             Total: R$ <span id="totalCarrinho">0.00</span>
                         </h4>
-                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                            <i class="bi bi-arrow-left me-1"></i>
-                            Continuar Comprando
-                        </button>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" data-bs-dismiss="modal">
+                                <i class="bi bi-house-door me-1"></i>
+                                Voltar ao inicio
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                Continuar Comprando
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
