@@ -267,6 +267,17 @@ body::before {
     font-weight: 600;
 }
 
+.import-file-input {
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.import-card-status {
+    color: #4a5568;
+    font-weight: 600;
+    word-break: break-word;
+}
+
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;

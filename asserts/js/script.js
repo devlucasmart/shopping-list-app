@@ -250,9 +250,17 @@ function processarMarkdownLista(markdown) {
 
 function importarMarkdownLista(event) {
     const arquivo = event.target.files[0];
+    const statusImportacao = document.getElementById("markdownImportStatus");
 
     if (!arquivo) {
+        if (statusImportacao) {
+            statusImportacao.textContent = "Nenhum arquivo selecionado.";
+        }
         return;
+    }
+
+    if (statusImportacao) {
+        statusImportacao.textContent = `Arquivo selecionado: ${arquivo.name}`;
     }
 
     const leitor = new FileReader();
@@ -276,9 +284,22 @@ function importarMarkdownLista(event) {
             atualizarTotalCarrinho();
             atualizarLista();
             mostrarNotificacao(`${itensImportados.length} itens importados do Markdown.`, "success");
+
+            if (statusImportacao) {
+                statusImportacao.textContent = `${arquivo.name} importado com sucesso.`;
+            }
+
+            const modalCarrinho = document.getElementById("carrinhoModal");
+            if (modalCarrinho && window.bootstrap?.Modal) {
+                bootstrap.Modal.getOrCreateInstance(modalCarrinho).show();
+            }
         } catch (erro) {
             console.error("Erro ao importar Markdown:", erro);
             mostrarNotificacao(erro.message || "Nao foi possivel importar o arquivo Markdown.", "error");
+
+            if (statusImportacao) {
+                statusImportacao.textContent = "Falha ao importar o arquivo.";
+            }
         } finally {
             event.target.value = "";
         }
@@ -286,6 +307,9 @@ function importarMarkdownLista(event) {
 
     leitor.onerror = function() {
         mostrarNotificacao("Nao foi possivel ler o arquivo selecionado.", "error");
+        if (statusImportacao) {
+            statusImportacao.textContent = "Falha ao ler o arquivo selecionado.";
+        }
         event.target.value = "";
     };
 

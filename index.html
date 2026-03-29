@@ -75,12 +75,15 @@
             </div>
             <div class="import-card-body">
                 <p class="import-card-hint mb-3">Formato esperado: colunas item, quantidade, unidade e valor unitario. Voce pode separar por categorias em varias tabelas.</p>
-                <div class="d-flex flex-column flex-md-row gap-3 align-items-stretch align-items-md-center">
-                    <input type="file" id="markdownFileInput" class="d-none" accept=".md,text/markdown" onchange="importarMarkdownLista(event)">
-                    <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('markdownFileInput').click()">
-                        <i class="bi bi-upload me-2"></i>Selecionar arquivo .md
-                    </button>
+                <div class="import-card-upload">
+                    <label for="markdownFileInput" class="form-label fw-bold mb-2">
+                        <i class="bi bi-upload me-2"></i>Selecione o arquivo Markdown
+                    </label>
+                    <input type="file" id="markdownFileInput" class="form-control import-file-input" accept=".md,.markdown,text/markdown,text/plain" onchange="importarMarkdownLista(event)">
+                </div>
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-stretch align-items-md-center mt-3">
                     <span class="import-card-example">Exemplo: | arroz | 0 | kg | 0 |</span>
+                    <span class="import-card-status" id="markdownImportStatus">Nenhum arquivo selecionado.</span>
                 </div>
             </div>
         </div>
