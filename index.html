@@ -12,60 +12,89 @@
 </head>
 <body>
     <div class="container py-4">
-        <!-- Header estilizado -->
         <div class="header-section">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">🛒 Lista de Compras</h2>
-                <button class="btn cart-button position-relative rounded-circle p-3" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#carrinhoModal">
-                    <i class="bi bi-cart-fill fs-4"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorItens" style="display: flex;">0</span>
-                </button>
+            <div class="header-grid">
+                <div class="header-copy">
+                    <span class="header-kicker">Modo mercado</span>
+                    <h1 class="header-title mb-2">Lista de compras para mercado e loja</h1>
+                    <p class="header-subtitle mb-0">Adicione itens rápido, importe seu modelo e acompanhe o que já foi pego durante a compra.</p>
+                    <div class="header-chips mt-3">
+                        <span class="header-chip"><i class="bi bi-shop me-2"></i>Mercado</span>
+                        <span class="header-chip"><i class="bi bi-basket2 me-2"></i>Loja</span>
+                        <span class="header-chip"><i class="bi bi-lightning-charge me-2"></i>Compra rápida</span>
+                    </div>
+                </div>
+
+                <div class="header-panel">
+                    <div class="header-panel-label">Acesso rápido</div>
+                    <button class="btn cart-button position-relative rounded-circle p-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#carrinhoModal">
+                        <i class="bi bi-cart-fill fs-4"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorItens" style="display: flex;">0</span>
+                    </button>
+                    <div class="header-panel-text">
+                        <strong>Seu carrinho</strong>
+                        <span>Revise, marque produtos pegos e edite rápido.</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Formulário de entrada -->
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-md-4">
-                <div class="position-relative">
-                    <i class="bi bi-bag-plus position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
-                    <input type="text" id="itemInput" class="form-control ps-5" placeholder="Digite um item">
+        <section class="section-card mb-4">
+            <div class="section-card-head">
+                <div>
+                    <span class="section-card-kicker">Entrada rápida</span>
+                    <h2 class="section-card-title mb-1">Adicionar item na hora</h2>
+                    <p class="section-card-text mb-0">Ideal para mercado e loja quando você lembrar de algo no caminho.</p>
+                </div>
+                <div class="section-card-badge">
+                    <i class="bi bi-clock-history me-2"></i>Uso rápido no celular
                 </div>
             </div>
-            <div class="col-6 col-md-2">
-                <div class="position-relative">
-                    <i class="bi bi-123 position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
-                    <input type="number" id="quantidadeInput" class="form-control ps-5" placeholder="Qtd" min="0">
-                </div>
-            </div>
-            <div class="col-6 col-md-2">
-                <select id="unidadeInput" class="form-control">
-                    <option value="unidade" disabled selected>Unidade</option>
-                    <option value="unidade">Unidade</option>
-                    <option value="kg">Kg</option>
-                    <option value="g">Gramas</option>
-                    <option value="L">Litros</option>
-                    <option value="mL">Mililitros</option>
-                    <option value="pacote">Pacote</option>
-                </select>
-            </div>
-            <div class="col-8 col-md-2">
-                <div class="position-relative">
-                    <i class="bi bi-currency-dollar position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #667eea; z-index: 10;"></i>
-                    <input type="text" id="valorUnitInput" class="form-control ps-5" placeholder="Valor" oninput="mascaraMoeda(this)">
-                </div>
-            </div>
-            <div class="col-4 col-md-2">
-                <button class="btn btn-primary w-100 h-100" id="btnAdicionar" onclick="adicionarItem()">
-                    <i class="bi bi-plus-circle me-2"></i>Add
-                </button>
-            </div>
-        </div>
 
-        <div class="import-card mb-4">
+            <div class="row g-3 mb-0">
+                <div class="col-12 col-md-4">
+                    <div class="position-relative field-wrap">
+                        <i class="bi bi-bag-plus position-absolute field-icon"></i>
+                        <input type="text" id="itemInput" class="form-control ps-5" placeholder="Digite um item">
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="position-relative field-wrap">
+                        <i class="bi bi-123 position-absolute field-icon"></i>
+                        <input type="number" id="quantidadeInput" class="form-control ps-5" placeholder="Qtd" min="0">
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select id="unidadeInput" class="form-control">
+                        <option value="unidade" disabled selected>Unidade</option>
+                        <option value="unidade">Unidade</option>
+                        <option value="kg">Kg</option>
+                        <option value="g">Gramas</option>
+                        <option value="L">Litros</option>
+                        <option value="mL">Mililitros</option>
+                        <option value="pacote">Pacote</option>
+                    </select>
+                </div>
+                <div class="col-8 col-md-2">
+                    <div class="position-relative field-wrap">
+                        <i class="bi bi-currency-dollar position-absolute field-icon"></i>
+                        <input type="text" id="valorUnitInput" class="form-control ps-5" placeholder="Valor" oninput="mascaraMoeda(this)">
+                    </div>
+                </div>
+                <div class="col-4 col-md-2">
+                    <button class="btn btn-primary w-100 h-100" id="btnAdicionar" onclick="adicionarItem()">
+                        <i class="bi bi-plus-circle me-2"></i>Adicionar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="import-card mb-4 section-card">
             <div class="import-card-header">
                 <div>
+                    <span class="section-card-kicker">Importação</span>
                     <h3 class="mb-1"><i class="bi bi-filetype-md me-2"></i>Importar Lista em Markdown</h3>
                     <p class="mb-0">Use uma ou mais tabelas Markdown para carregar itens com quantidade e valor iniciando em 0.</p>
                 </div>
@@ -88,21 +117,28 @@
             </div>
         </div>
         
-        <!-- Exibição do valor total -->
-        <div class="total-display">
-            <div class="content">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span>💰 Total da Lista</span>
-                    <span>R$ <span id="totalCarrinho">0.00</span></span>
+        <section class="checkout-card">
+            <div class="total-display">
+                <div class="content">
+                    <div class="total-heading">
+                        <div>
+                            <span class="total-label">Resumo da compra</span>
+                            <div class="total-title">Total estimado da lista</div>
+                        </div>
+                        <span class="total-amount">R$ <span id="totalCarrinho">0.00</span></span>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Botão Exportar para PDF -->
-        <button class="btn btn-danger w-100" id="btnExportar" onclick="exportarPDF()">
-            <i class="bi bi-file-earmark-pdf me-2"></i>
-            Exportar Lista para PDF
-        </button>
+            <div class="checkout-actions">
+                <div class="checkout-note">
+                    <i class="bi bi-receipt-cutoff me-2"></i>Feche a compra exportando a lista em PDF quando terminar.
+                </div>
+                <button class="btn btn-danger" id="btnExportar" onclick="exportarPDF()">
+                    <i class="bi bi-file-earmark-pdf me-2"></i>
+                    Exportar Lista para PDF
+                </button>
+            </div>
+        </section>
     </div>
 
     <!-- Modal do Carrinho -->
